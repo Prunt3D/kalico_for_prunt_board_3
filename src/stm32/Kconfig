@@ -221,14 +221,14 @@ config FLASH_SIZE
     default 0x40000 if MACH_STM32F2 || MACH_STM32F401 || MACH_STM32H723 || MACH_AT32F403
     default 0x80000 if MACH_STM32F4x5 || MACH_STM32F446
     default 0x20000 if MACH_STM32G0 || MACH_STM32G431
-    default 0x40000 if MACH_STM32G474
+    default 0xE000 if MACH_STM32G474
     default 0x20000 if MACH_STM32H750
     default 0x200000 if MACH_STM32H743 || MACH_STM32F765
     default 0x20000 if MACH_N32G45x
 
 config FLASH_BOOT_ADDRESS
     hex
-    default 0x8000000
+    default 0x8032000
 
 config RAM_START
     hex
@@ -242,7 +242,7 @@ config RAM_SIZE
     default 0x2800 if MACH_STM32F103x6
     default 0x5000 if MACH_STM32F103 && !MACH_STM32F103x6 # Ram size of stm32f103x8
     default 0x8000 if MACH_STM32G431
-    default 0x20000 if MACH_STM32G474
+    default 0x1FC00 if MACH_STM32G474
     default 0xa000 if MACH_STM32L412
     default 0x20000 if MACH_STM32F207
     default 0x10000 if MACH_STM32F401
@@ -331,7 +331,7 @@ config FLASH_APPLICATION_ADDRESS
     default 0x8010000 if STM32_FLASH_START_10000
     default 0x8020000 if STM32_FLASH_START_20000
     default 0x8020200 if STM32_FLASH_START_20200
-    default 0x8000000
+    default 0x8032000
 
 config ARMCM_RAM_VECTORTABLE
     bool
