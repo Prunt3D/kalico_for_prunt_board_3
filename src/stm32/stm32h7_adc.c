@@ -17,153 +17,15 @@
 #define ADC_TEMPERATURE_PIN 0xfe
 DECL_ENUMERATION("pin", "ADC_TEMPERATURE", ADC_TEMPERATURE_PIN);
 
-DECL_CONSTANT("ADC_MAX", 4095);
+DECL_CONSTANT("ADC_MAX", 32767);
 
 #define ADCIN_BANK_SIZE 20
 
-// GPIOs like A0_C are not covered!
-// This always gives the pin connected to the positive channel
-static const uint8_t adc_pins[] = {
-#if CONFIG_MACH_STM32H7
-    // ADC1
-    ADC_INVALID_PIN, // PA0_C  ADC12_INP0
-    ADC_INVALID_PIN, // PA1_C  ADC12_INP1
-    GPIO('F', 11), //           ADC1_INP2
-    GPIO('A', 6),  //          ADC12_INP3
-    GPIO('C', 4),  //          ADC12_INP4
-    GPIO('B', 1),  //          ADC12_INP5
-    GPIO('F', 12), //           ADC1_INP6
-    GPIO('A', 7),  //          ADC12_INP7
-    GPIO('C', 5),  //          ADC12_INP8
-    GPIO('B', 0),  //          ADC12_INP9
-    GPIO('C', 0),  //        ADC123_INP10
-    GPIO('C', 1),  //        ADC123_INP11
-    GPIO('C', 2),  //        ADC123_INP12
-    GPIO('C', 3),  //         ADC12_INP13
-    GPIO('A', 2),  //         ADC12_INP14
-    GPIO('A', 3),  //         ADC12_INP15
-    GPIO('A', 0),  //          ADC1_INP16
-    GPIO('A', 1),  //          ADC1_INP17
-    GPIO('A', 4),  //         ADC12_INP18
-    GPIO('A', 5),  //         ADC12_INP19
-    // ADC2
-    ADC_INVALID_PIN, // PA0_C  ADC12_INP0
-    ADC_INVALID_PIN, // PA1_C  ADC12_INP1
-    GPIO('F', 13), //           ADC2_INP2
-    GPIO('A', 6),  //          ADC12_INP3
-    GPIO('C', 4),  //          ADC12_INP4
-    GPIO('B', 1),  //          ADC12_INP5
-    GPIO('F', 14), //           ADC2_INP6
-    GPIO('A', 7),  //          ADC12_INP7
-    GPIO('C', 5),  //          ADC12_INP8
-    GPIO('B', 0),  //          ADC12_INP9
-    GPIO('C', 0),  //        ADC123_INP10
-    GPIO('C', 1),  //        ADC123_INP11
-    GPIO('C', 2),  //        ADC123_INP12
-    GPIO('C', 3),  //         ADC12_INP13
-    GPIO('A', 2),  //         ADC12_INP14
-    GPIO('A', 3),  //         ADC12_INP15
-    ADC_INVALID_PIN,  //         dac_out1
-    ADC_INVALID_PIN,  //         dac_out2
-    GPIO('A', 4),  //         ADC12_INP18
-    GPIO('A', 5),  //         ADC12_INP19
-    // ADC3
-    ADC_INVALID_PIN, // PC2_C   ADC3_INP0
-    ADC_INVALID_PIN, // PC3_C   ADC3_INP1
-    GPIO('F', 9) , //           ADC3_INP2
-    GPIO('F', 7),  //           ADC3_INP3
-    GPIO('F', 5),  //           ADC3_INP4
-    GPIO('F', 3),  //           ADC3_INP5
-    GPIO('F', 10), //           ADC3_INP6
-    GPIO('F', 8),  //           ADC3_INP7
-    GPIO('F', 6),  //           ADC3_INP8
-    GPIO('F', 4),  //           ADC3_INP9
-    GPIO('C', 0),  //        ADC123_INP10
-    GPIO('C', 1),  //        ADC123_INP11
-    GPIO('C', 2),  //        ADC123_INP12
-    GPIO('H', 2),  //          ADC3_INP13
-    GPIO('H', 3),  //          ADC3_INP14
-    GPIO('H', 4),  //          ADC3_INP15
-    GPIO('H', 5),  //          ADC3_INP16
-  #if CONFIG_MACH_STM32H723
-    ADC_TEMPERATURE_PIN,
-    ADC_INVALID_PIN,
-  #else
-    ADC_INVALID_PIN, //            Vbat/4
-    ADC_TEMPERATURE_PIN,//         VSENSE
-  #endif
-    ADC_INVALID_PIN, //           VREFINT
-#elif CONFIG_MACH_STM32G4
-    ADC_INVALID_PIN,        // [0] vssa
-    GPIO('A', 0),           // [1]
-    GPIO('A', 1),           // [2]
-    GPIO('A', 2),           // [3]
-    GPIO('A', 3),           // [4]
-    GPIO('B', 14),          // [5]
-    GPIO('C', 0),           // [6]
-    GPIO('C', 1),           // [7]
-    GPIO('C', 2),           // [8]
-    GPIO('C', 3),           // [9]
-    GPIO('F', 0),           // [10]
-    GPIO('B', 12),          // [11]
-    GPIO('B', 1),           // [12]
-    ADC_INVALID_PIN,        // [13] opamp
-    GPIO('B', 11),          // [14]
-    GPIO('B', 0),           // [15]
-    ADC_TEMPERATURE_PIN,    // [16] vtemp
-    ADC_INVALID_PIN,        // [17] vbat/3
-    ADC_INVALID_PIN,        // [18] vref
-    ADC_INVALID_PIN,
-    ADC_INVALID_PIN,        // [0] vssa       ADC 2
-    GPIO('A', 0),           // [1]
-    GPIO('A', 1),           // [2]
-    GPIO('A', 6),           // [3]
-    GPIO('A', 7),           // [4]
-    GPIO('C', 4),           // [5]
-    GPIO('C', 0),           // [6]
-    GPIO('C', 1),           // [7]
-    GPIO('C', 2),           // [8]
-    GPIO('C', 3),           // [9]
-    GPIO('F', 1),           // [10]
-    GPIO('C', 5),           // [11]
-    GPIO('B', 2),           // [12]
-    GPIO('A', 5),           // [13]
-    GPIO('B', 11),          // [14]
-    GPIO('B', 15),          // [15]
-    ADC_INVALID_PIN,        // [16] opamp
-    GPIO('A', 4),           // [17]
-    ADC_INVALID_PIN,        // [18] opamp
-#else // stm32l4
-    ADC_INVALID_PIN,        // vref
-    GPIO('C', 0),           // ADC12_IN1 .. 16
-    GPIO('C', 1),
-    GPIO('C', 2),
-    GPIO('C', 3),
-    GPIO('A', 0),
-    GPIO('A', 1),
-    GPIO('A', 2),
-    GPIO('A', 3),
-    GPIO('A', 4),
-    GPIO('A', 5),
-    GPIO('A', 6),
-    GPIO('A', 7),
-    GPIO('C', 4),
-    GPIO('C', 5),
-    GPIO('B', 0),
-    GPIO('B', 1),
-    ADC_TEMPERATURE_PIN,    // temp
-    ADC_INVALID_PIN,        // vbat
-#endif
-};
-
 // ADC timing
 #define ADC_CKMODE 0b11
-#define ADC_ATICKS 0b110
+#define ADC_ATICKS 0b101
 #define ADC_ATICKS_H723_ADC3 0b111
-// stm32h7: clock=25Mhz, Tsamp=387.5, Tconv=394, total=15.76us
-// stm32h723 adc3: clock=50Mhz, Tsamp=640.5, Tconv=653, total=13.06us
-// stm32l4: clock=20Mhz, Tsamp=247.5, Tconv=260, total=13.0us
-// stm32g4: clock=37.5Mhz, Tsamp=247.5, Tconv=260, total=6.933us
+// stm32g4: clock=37.5Mhz, Tsamp=92.5, Tconv=105, Oversampling=8, total=22.4us
 
 // Handle register name differences between chips
 #if CONFIG_MACH_STM32H723
@@ -177,11 +39,19 @@ gpio_adc_setup(uint32_t pin)
 {
     // Find pin in adc_pins table
     int chan;
-    for (chan=0; ; chan++) {
-        if (chan >= ARRAY_SIZE(adc_pins))
-            shutdown("Not a valid ADC pin");
-        if (adc_pins[chan] == pin)
-            break;
+
+    if (pin == PRUNT_GPIO_THERMISTOR_START + 0) {
+        chan = 8;
+    } else if (pin == PRUNT_GPIO_THERMISTOR_START + 1) {
+        chan = 9;
+    } else if (pin == PRUNT_GPIO_THERMISTOR_START + 2) {
+        chan = 3;
+    } else if (pin == PRUNT_GPIO_THERMISTOR_START + 3) {
+        chan = 2;
+    } else if (pin == ADC_TEMPERATURE_PIN) {
+        chan = 16;
+    } else {
+        shutdown("Not a valid ADC pin");
     }
 
     // Determine which ADC block to use and enable its clock
@@ -237,6 +107,8 @@ gpio_adc_setup(uint32_t pin)
             adc->CFGR = ADC_CFGR_JQDIS | (0b110 << ADC_CFGR_RES_Pos);
         }
 #endif
+        // Use 8x oversampling.
+        adc->CFGR2 = 0b010 << ADC_CFGR2_OVSR_Pos | ADC_CFGR2_ROVSE | ADC_CFGR2_JOVSE;
 
         // Perform adc calibration
         adc->CR = cr | ADC_CR_ADCAL;
@@ -263,7 +135,7 @@ gpio_adc_setup(uint32_t pin)
     if (pin == ADC_TEMPERATURE_PIN) {
         adc_common->CCR |= ADC_CCR_TSEN;
     } else {
-        gpio_peripheral(pin, GPIO_ANALOG, 0);
+        gpio_peripheral(PRUNT_GPIO_TO_GPIO(pin), GPIO_ANALOG, 0);
     }
 
     // Setup preselect (connect) channel on stm32h7
@@ -292,7 +164,7 @@ gpio_adc_sample(struct gpio_adc g)
     adc->SQR1 = (g.chan << ADC_SQR1_SQ1_Pos);
     adc->CR = cr | ADC_CR_ADSTART;
 need_delay:
-    return timer_from_us(20);
+    return timer_from_us(25);
 }
 
 // Read a value; use only after gpio_adc_sample() returns zero
