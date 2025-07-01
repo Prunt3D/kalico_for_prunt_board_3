@@ -24,11 +24,36 @@
 #include "stm32l4xx.h"
 #endif
 
+#define PRUNT_GPIO_THERMISTOR_START 0
+#define PRUNT_GPIO_STEPPER_STEP_START 4
+#define PRUNT_GPIO_STEPPER_DIR_START 10
+#define PRUNT_GPIO_HEATER_PWM_START 16
+#define PRUNT_GPIO_FAN_HS_PWM_START 18
+#define PRUNT_GPIO_FAN_LS_PWM_START 22
+#define PRUNT_GPIO_TMC_UART_INTERNAL 26
+#define PRUNT_GPIO_ENDSTOP_START 27
+#define PRUNT_GPIO_FAN_TACH_START 31
+#define PRUNT_GPIO_TMC_UART 35
+
 // gpio.c
 extern GPIO_TypeDef * const digital_regs[];
 #define GPIO(PORT, NUM) (((PORT)-'A') * 16 + (NUM))
 #define GPIO2PORT(PIN) ((PIN) / 16)
 #define GPIO2BIT(PIN) (1<<((PIN) % 16))
+
+#define PRUNT_GPIO_TO_GPIO(PRUNT_GPIO) \
+    (((int[]){ \
+        [PRUNT_GPIO_THERMISTOR_START]   = GPIO('C',  2), GPIO('C',  3), GPIO('A',  3), GPIO('A',  2), \
+        [PRUNT_GPIO_STEPPER_STEP_START] = GPIO('A', 11), GPIO('A',  8), GPIO('C',  9), GPIO('B', 13), GPIO('C',  7), GPIO('B', 15), \
+        [PRUNT_GPIO_STEPPER_DIR_START]  = GPIO('A', 10), GPIO('A',  9), GPIO('C',  8), GPIO('B', 12), GPIO('C',  6), GPIO('B', 14), \
+        [PRUNT_GPIO_HEATER_PWM_START]   = GPIO('B',  2), GPIO('B',  5), \
+        [PRUNT_GPIO_FAN_HS_PWM_START]   = GPIO('A',  5), GPIO('A',  6), GPIO('B',  9), GPIO('A', 15), \
+        [PRUNT_GPIO_FAN_LS_PWM_START]   = GPIO('A',  3), GPIO('A',  4), GPIO('B',  7), GPIO('A', 14), \
+        [PRUNT_GPIO_TMC_UART_INTERNAL]  = GPIO('B',  3), \
+        [PRUNT_GPIO_ENDSTOP_START]      = GPIO('B',  6), GPIO('C', 13), GPIO('C', 14), GPIO('C', 15), \
+        [PRUNT_GPIO_FAN_TACH_START]     = GPIO('A',  7), GPIO('B',  0), GPIO('B',  1), GPIO('B', 11), \
+        [PRUNT_GPIO_TMC_UART]           = GPIO('B',  3) \
+    })[PRUNT_GPIO])
 
 // gpioperiph.c
 #define GPIO_INPUT 0

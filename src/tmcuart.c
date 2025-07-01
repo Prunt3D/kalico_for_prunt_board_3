@@ -11,6 +11,7 @@
 #include "basecmd.h" // oid_alloc
 #include "command.h" // DECL_COMMAND
 #include "sched.h" // DECL_SHUTDOWN
+#include "stm32/internal.h"
 
 struct tmcuart_s {
     struct timer timer;
@@ -176,8 +177,17 @@ command_config_tmcuart(uint32_t *args)
                                     , sizeof(*t));
     uint8_t pull_up = args[2];
     uint32_t rx_pin = args[1], tx_pin = args[3];
-    t->rx_pin = gpio_in_setup(rx_pin, !!pull_up);
-    t->tx_pin = gpio_out_setup(tx_pin, 1);
+
+    if (rx_pin != tx_pin) {
+        shutdown("Only single-wire TMC UART is supported.");
+    }
+
+    if (rx_pin != PRUNT_GPIO_TMC_UART) {
+        shutdown("Not a valid TMC UART pin.");
+    }
+
+    t->rx_pin = gpio_in_setup(PRUNT_GPIO_TMC_UART_INTERNAL, !!pull_up);
+    t->tx_pin = gpio_out_setup(PRUNT_GPIO_TMC_UART_INTERNAL, 1);
     t->cfg_bit_time = args[4];
     t->flags = (TU_LINE_HIGH | (pull_up ? TU_PULLUP : 0)
                 | (rx_pin == tx_pin ? TU_SINGLE_WIRE : 0));

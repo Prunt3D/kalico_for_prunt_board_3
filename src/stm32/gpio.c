@@ -11,27 +11,15 @@
 #include "internal.h" // gpio_peripheral
 #include "sched.h" // sched_shutdown
 
-DECL_ENUMERATION_RANGE("pin", "PA0", GPIO('A', 0), 16);
-DECL_ENUMERATION_RANGE("pin", "PB0", GPIO('B', 0), 16);
-DECL_ENUMERATION_RANGE("pin", "PC0", GPIO('C', 0), 16);
-#ifdef GPIOD
-DECL_ENUMERATION_RANGE("pin", "PD0", GPIO('D', 0), 16);
-#endif
-#ifdef GPIOE
-DECL_ENUMERATION_RANGE("pin", "PE0", GPIO('E', 0), 16);
-#endif
-#ifdef GPIOF
-DECL_ENUMERATION_RANGE("pin", "PF0", GPIO('F', 0), 16);
-#endif
-#ifdef GPIOG
-DECL_ENUMERATION_RANGE("pin", "PG0", GPIO('G', 0), 16);
-#endif
-#ifdef GPIOH
-DECL_ENUMERATION_RANGE("pin", "PH0", GPIO('H', 0), 16);
-#endif
-#ifdef GPIOI
-DECL_ENUMERATION_RANGE("pin", "PI0", GPIO('I', 0), 16);
-#endif
+DECL_ENUMERATION_RANGE("pin", "GPIO_THERMISTOR_1", PRUNT_GPIO_THERMISTOR_START, 4);
+DECL_ENUMERATION_RANGE("pin", "GPIO_STEPPER_STEP_1", PRUNT_GPIO_STEPPER_STEP_START, 6);
+DECL_ENUMERATION_RANGE("pin", "GPIO_STEPPER_DIR_1", PRUNT_GPIO_STEPPER_DIR_START, 6);
+DECL_ENUMERATION_RANGE("pin", "GPIO_HEATER_PWM_1", PRUNT_GPIO_HEATER_PWM_START, 2);
+DECL_ENUMERATION_RANGE("pin", "GPIO_ENDSTOP_1", PRUNT_GPIO_ENDSTOP_START, 4);
+DECL_ENUMERATION_RANGE("pin", "GPIO_FAN_HS_PWM_1", PRUNT_GPIO_FAN_HS_PWM_START, 4);
+DECL_ENUMERATION_RANGE("pin", "GPIO_FAN_LS_PWM_1", PRUNT_GPIO_FAN_LS_PWM_START, 4);
+DECL_ENUMERATION_RANGE("pin", "GPIO_FAN_TACH_1", PRUNT_GPIO_FAN_TACH_START, 4);
+DECL_ENUMERATION("pin", "GPIO_TMC_UART", PRUNT_GPIO_TMC_UART);
 
 GPIO_TypeDef * const digital_regs[] = {
     ['A' - 'A'] = GPIOA, GPIOB, GPIOC,
@@ -77,6 +65,12 @@ gpio_valid(uint32_t pin)
 struct gpio_out
 gpio_out_setup(uint32_t pin, uint32_t val)
 {
+    if (pin < PRUNT_GPIO_STEPPER_STEP_START || pin >= PRUNT_GPIO_ENDSTOP_START) {
+        shutdown("Not an output pin");
+    }
+
+    pin = PRUNT_GPIO_TO_GPIO(pin);
+
     if (!gpio_valid(pin))
         shutdown("Not an output pin");
     GPIO_TypeDef *regs = digital_regs[GPIO2PORT(pin)];
@@ -129,6 +123,12 @@ gpio_out_write(struct gpio_out g, uint32_t val)
 struct gpio_in
 gpio_in_setup(uint32_t pin, int32_t pull_up)
 {
+    if (pin < PRUNT_GPIO_TMC_UART_INTERNAL || pin >= PRUNT_GPIO_TMC_UART) {
+        shutdown("Not an input pin");
+    }
+
+    pin = PRUNT_GPIO_TO_GPIO(pin);
+
     if (!gpio_valid(pin))
         shutdown("Not a valid input pin");
     GPIO_TypeDef *regs = digital_regs[GPIO2PORT(pin)];
