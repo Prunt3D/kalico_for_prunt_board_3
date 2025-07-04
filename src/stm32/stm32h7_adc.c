@@ -17,7 +17,7 @@
 #define ADC_TEMPERATURE_PIN 0xfe
 DECL_ENUMERATION("pin", "ADC_TEMPERATURE", ADC_TEMPERATURE_PIN);
 
-DECL_CONSTANT("ADC_MAX", 32767);
+DECL_CONSTANT("ADC_MAX", 32760);
 
 #define ADCIN_BANK_SIZE 20
 
@@ -172,7 +172,20 @@ uint16_t
 gpio_adc_read(struct gpio_adc g)
 {
     ADC_TypeDef *adc = g.adc;
-    return adc->DR;
+
+    if (g.chan == 8 || g.chan == 9 || g.chan == 3 || g.chan == 2) {
+        //  Thermistor input channels.
+        const float raw_adc = (float)adc->DR;
+        if (raw_adc > 32760.0 / 470.0 * 429.0) {
+            // Thermistor is either disconnected or shorted to a voltage above thermistor VCC.
+            return 32760.0;
+        } else {
+            // Adjust returned ADC value to act as if the biasing resistors don't exist.
+            return (uint16_t)(43.0 * 32760.0 * raw_adc / (43.0 * 32767.0 - 4.0 * raw_adc));
+        }
+    } else {
+        return adc->DR;
+    }
 }
 
 // Cancel a sample that may have been started with gpio_adc_sample()
