@@ -181,7 +181,28 @@ gpio_adc_read(struct gpio_adc g)
             return 32760.0;
         } else {
             // Adjust returned ADC value to act as if the biasing resistors don't exist.
-            return (uint16_t)(43.0 * 32760.0 * raw_adc / (43.0 * 32767.0 - 4.0 * raw_adc));
+            //
+            // Let:
+            // - t be the resistance of the thermistor,
+            // - x be the ADC reading for the thermistor,
+            // - y be the ADC reading for the thermistor ground:
+            //
+            // t = 86000 * (x - y) / (43 * ADC_MAX - 47 * x)
+            //
+            // Assume that y is zero. It is possible to use this value to get a
+            // more accurate reading as is done in the Prunt firmware for this
+            // board, but that would require a major rework of the Klipper ADC
+            // code:
+            //
+            // t = 86000 * x / (43 * ADC_MAX - 47 * x)
+            //
+            // Solve for the ADC reading that we would get if the biasing
+            // resistors were not present and we were using a 4.7k pull-up:
+            //
+            // t / (t + 4700) * ADC_MAX
+            // = (86000 * x / (43 * ADC_MAX - 47 * x)) / ((86000 * x / (43 * ADC_MAX - 47 * x)) + 4700) * ADC_MAX
+            // = 860.0 * ADC_MAX * x / (2021.0 * ADC_MAX - 1349.0 * x)
+            return (uint16_t)(860.0 * 32760.0 * raw_adc / (2021.0 * 32760.0 - 1349.0 * raw_adc));
         }
     } else {
         return adc->DR;
