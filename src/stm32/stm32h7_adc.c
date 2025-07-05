@@ -17,7 +17,7 @@
 #define ADC_TEMPERATURE_PIN 0xfe
 DECL_ENUMERATION("pin", "ADC_TEMPERATURE", ADC_TEMPERATURE_PIN);
 
-DECL_CONSTANT("ADC_MAX", 32760);
+DECL_CONSTANT("ADC_MAX", 4095);
 
 #define ADCIN_BANK_SIZE 20
 
@@ -107,8 +107,8 @@ gpio_adc_setup(uint32_t pin)
             adc->CFGR = ADC_CFGR_JQDIS | (0b110 << ADC_CFGR_RES_Pos);
         }
 #endif
-        // Use 8x oversampling.
-        adc->CFGR2 = 0b010 << ADC_CFGR2_OVSR_Pos | ADC_CFGR2_ROVSE | ADC_CFGR2_JOVSE;
+        // Use 8x oversampling with 8x divisor.
+        adc->CFGR2 = 0b011 << ADC_CFGR2_OVSS_Pos | 0b010 << ADC_CFGR2_OVSR_Pos | ADC_CFGR2_ROVSE | ADC_CFGR2_JOVSE;
 
         // Perform adc calibration
         adc->CR = cr | ADC_CR_ADCAL;
@@ -176,9 +176,9 @@ gpio_adc_read(struct gpio_adc g)
     if (g.chan == 8 || g.chan == 9 || g.chan == 3 || g.chan == 2) {
         //  Thermistor input channels.
         const float raw_adc = (float)adc->DR;
-        if (raw_adc > 32760.0 / 470.0 * 429.0) {
+        if (raw_adc > 4095.0 / 470.0 * 429.0) {
             // Thermistor is either disconnected or shorted to a voltage above thermistor VCC.
-            return 32760.0;
+            return 4095.0;
         } else {
             // Adjust returned ADC value to act as if the biasing resistors don't exist.
             //
@@ -202,7 +202,7 @@ gpio_adc_read(struct gpio_adc g)
             // t / (t + 4700) * ADC_MAX
             // = (86000 * x / (43 * ADC_MAX - 47 * x)) / ((86000 * x / (43 * ADC_MAX - 47 * x)) + 4700) * ADC_MAX
             // = 860.0 * ADC_MAX * x / (2021.0 * ADC_MAX - 1349.0 * x)
-            return (uint16_t)(860.0 * 32760.0 * raw_adc / (2021.0 * 32760.0 - 1349.0 * raw_adc));
+            return (uint16_t)(860.0 * 4095.0 * raw_adc / (2021.0 * 4095.0 - 1349.0 * raw_adc));
         }
     } else {
         return adc->DR;
